@@ -1,15 +1,23 @@
-data "google_compute_network" "default" {
-  project = "${google_project_services.project.project}"
-  name = "default"
-}
-
 resource "google_compute_firewall" "allow_icmp" {
     name = "allow-icmp"
     project = "${google_project_services.project.project}"
-    network = "default"
+    network = "${google_compute_network.default.self_link}"
 
     allow {
         protocol = "icmp"
+    }
+
+    source_ranges = ["0.0.0.0/0"]
+}
+
+resource "google_compute_firewall" "allow_ssh" {
+    name = "allow-ssh"
+    project = "${google_project_services.project.project}"
+    network = "${google_compute_network.default.self_link}"
+
+    allow {
+        protocol = "tcp"
+        ports = ["22"]
     }
 
     source_ranges = ["0.0.0.0/0"]
@@ -20,7 +28,7 @@ data "cloudflare_ip_ranges" "cloudflare" {}
 resource "google_compute_firewall" "allow_cloudflare" {
     name = "allow-cloudflare"
     project = "${google_project_services.project.project}"
-    network = "default"
+    network = "${google_compute_network.default.self_link}"
 
     allow {
         protocol = "tcp"

@@ -10,6 +10,7 @@ resource "google_compute_instance" "default" {
  zone = "${var.region}-a"
  allow_stopping_for_update = "true"
  name = "${var.project_name}-web"
+ tags = ["web"]
  machine_type = "n1-standard-1"
 
  boot_disk {
@@ -21,7 +22,7 @@ resource "google_compute_instance" "default" {
  }
 
  network_interface {
-   network = "default"
+   subnetwork = "${google_compute_subnetwork.default.self_link}"
    access_config {
      nat_ip = "${google_compute_address.default.address}"
    }
